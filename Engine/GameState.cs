@@ -15,14 +15,23 @@ namespace SFML_Engine
         protected string _name;
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name"> Name of the game state </param>
+        public GameState(string name)
+        {
+            _name = name;
+        }
+
+        /// <summary>
         /// Handles the keyboard input
         /// </summary>
-        public abstract void handleInput();
+        public abstract void HandleInput();
         /// <summary>
         /// Handles window event
         /// </summary>
         /// <param name="w"> Used window </param>
-        public void handleEvent(RenderWindow w)
+        public void HandleEvent(RenderWindow w)
         {
             w.DispatchEvents();
         }

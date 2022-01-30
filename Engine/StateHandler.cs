@@ -10,7 +10,7 @@ namespace SFML_Engine
     internal class StateHandler
     {
         GameState _state; //Contains the actual state
-        List<GameState> _allStates; //Contains all the possible game state
+        List<GameState> _allStates = new List<GameState>(); //Contains all the possible game state
 
         /// <summary>
         /// Constructor
@@ -64,8 +64,8 @@ namespace SFML_Engine
                 return;
             }
 
-            _state.handleInput();
-            _state.handleEvent(w);
+            _state.HandleInput();
+            _state.HandleEvent(w);
             _state.Update(dt);
             w.Clear();
             _state.Render(w);

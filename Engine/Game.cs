@@ -13,9 +13,12 @@ namespace SFML_Engine
         float _elapsedTime;
         RenderWindow _window;
 
-        public Game(uint w, uint h, string title)
+        public Game(uint w, uint h, string title, string startState, params GameState[] states)
         {
             _window = new RenderWindow(new VideoMode(w, h), title);
+            _stateHandler = new StateHandler(states);
+            _stateHandler.ChangeState(startState);
+            InputHandler.GetInstance().Window = _window;
         }
 
         public void Run()

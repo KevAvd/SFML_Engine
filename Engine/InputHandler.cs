@@ -11,9 +11,12 @@ namespace SFML_Engine
 {
     internal class InputHandler
     {
+        bool[] _oldMouseState = new bool[(int)Mouse.Button.ButtonCount];
+        bool[] _actMouseState = new bool[(int)Mouse.Button.ButtonCount];
         bool[] _oldState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the old state of keys
         bool[] _actState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the actual state of keys
         static InputHandler _instance = null; //Singleton instance
+        RenderWindow _window;
 
         /// <summary>
         /// Updates the actual states of keys
@@ -30,6 +33,18 @@ namespace SFML_Engine
                 {
                     _actState[i] = false;
                 }
+
+                if (i < (int)Mouse.Button.ButtonCount)
+                {
+                    if (Mouse.IsButtonPressed((Mouse.Button)i))
+                    {
+                        _actMouseState[i] = true;
+                    }
+                    else
+                    {
+                        _actMouseState[i] = false;
+                    }
+                }
             }
         }
 
@@ -39,6 +54,7 @@ namespace SFML_Engine
         public void UpdateOld()
         {
             Array.Copy(_actState, _oldState, _actState.Length);
+            Array.Copy(_actMouseState, _oldMouseState, _actMouseState.Length);
         }
 
         /// <summary>
@@ -87,6 +103,68 @@ namespace SFML_Engine
         }
 
         /// <summary>
+        /// Verify if a mouse button is pressed
+        /// </summary>
+        /// <param name="button"> Button to verify </param>
+        /// <returns> True if button is pressed </returns>
+        public bool IsMousePressed(Mouse.Button button)
+        {
+            if (_actMouseState[(int)button])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verify if a mouse button is clicked
+        /// </summary>
+        /// <param name="button"> Button to verify </param>
+        /// <returns> True if button is clicked </returns>
+        public bool IsMouseClicked(Mouse.Button button)
+        {
+            if (!_oldMouseState[(int)button] && _actMouseState[(int)button])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verify if a mouse button is released
+        /// </summary>
+        /// <param name="button"> Button to verify </param>
+        /// <returns> True if button is released </returns>
+        public bool IsMouseReleased(Mouse.Button button)
+        {
+            if (_oldState[(int)button] && !_actState[(int)button])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Get mouse position
+        /// </summary>
+        /// <param name="relative"> Determine if the returned position is relative to the window </param>
+        /// <returns> Mouse position </returns>
+        public Vector2i GetMousePosition(bool relative)
+        {
+            if (relative)
+            {
+                return Mouse.GetPosition(_window);
+            }
+            else
+            {
+                return Mouse.GetPosition();
+            }
+        }
+
+        /// <summary>
         /// Get the instance of this singleton class
         /// </summary>
         /// <returns> Instance of this class </returns>
@@ -98,6 +176,15 @@ namespace SFML_Engine
             }
 
             return _instance;
+        }
+
+        /// <summary>
+        /// Get/Set the used window
+        /// </summary>
+        public RenderWindow Window
+        {
+            get { return _window; }
+            set { _window = value; }
         }
     }
 }
