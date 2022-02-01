@@ -11,10 +11,14 @@ namespace SFML_Engine
 {
     internal class InputHandler
     {
-        bool[] _oldMouseState = new bool[(int)Mouse.Button.ButtonCount];
-        bool[] _actMouseState = new bool[(int)Mouse.Button.ButtonCount];
-        bool[] _oldState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the old state of keys
-        bool[] _actState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the actual state of keys
+        bool[] _oldMouseState = new bool[(int)Mouse.Button.ButtonCount]; //Contains the old states of mouse's buttons
+        bool[] _actMouseState = new bool[(int)Mouse.Button.ButtonCount]; //Contains the actual states of mouse's buttons
+        bool[] _oldState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the old state of keyboard's keys
+        bool[] _actState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the actual state of keyboard's keys
+        public event EventHandler key_clicked_event;
+        public event EventHandler key_pressed_event;
+        public event EventHandler key_released_event;
+
         static InputHandler _instance = null; //Singleton instance
         RenderWindow _window;
 
@@ -25,6 +29,7 @@ namespace SFML_Engine
         {
             for(int i = 0; i < (int)Keyboard.Key.KeyCount; i++)
             {
+                //Update keyboard's keys
                 if (Keyboard.IsKeyPressed((Keyboard.Key)i))
                 {
                     _actState[i] = true;
@@ -34,6 +39,7 @@ namespace SFML_Engine
                     _actState[i] = false;
                 }
 
+                //Update's mouse's buttons
                 if (i < (int)Mouse.Button.ButtonCount)
                 {
                     if (Mouse.IsButtonPressed((Mouse.Button)i))

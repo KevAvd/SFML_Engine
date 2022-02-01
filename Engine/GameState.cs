@@ -22,19 +22,10 @@ namespace SFML_Engine
         {
             _name = name;
         }
-
         /// <summary>
-        /// Handles the keyboard input
+        /// Loads all elements necessary
         /// </summary>
-        public abstract void HandleInput();
-        /// <summary>
-        /// Handles window event
-        /// </summary>
-        /// <param name="w"> Used window </param>
-        public void HandleEvent(RenderWindow w)
-        {
-            w.DispatchEvents();
-        }
+        public abstract void Load();
         /// <summary>
         /// Update state
         /// </summary>

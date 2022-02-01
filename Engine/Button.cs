@@ -15,43 +15,95 @@ namespace SFML_Engine
         Vector2f _position;
         Vector2i _size;
         Sprite _sprite;
-        bool _pressed;
-        bool _clicked;
+        Color _color;
+        bool _texture;
+        bool _oldState = false;
+        bool _state = false;
+        public event EventHandler ClickedEvent;
+        public event EventHandler PressedEvent;
+        public event EventHandler ReleasedEvent;
 
         public Button(string n, Vector2f p, Vector2i s, Texture texture)
         {
             _name = n;
             _position = p;
             _size = s;
+            _texture = true;
             _sprite = new Sprite(texture);
+            _sprite.Position = _position;
+            _sprite.Scale = new Vector2f((float)s.X/ (float)_sprite.Texture.Size.X, (float)s.Y/ (float)_sprite.Texture.Size.Y);
         }
 
+        public Button(string n, Vector2f p, Vector2i s, Color c)
+        {
+            _name = n;
+            _position = p;
+            _texture = false;
+            _color = c;
+            _size = s;
+        }
+
+        /// <summary>
+        /// Update button
+        /// </summary>
         public void Update()
         {
+            //Get mouse position
             int mouseX = InputHandler.GetInstance().GetMousePosition(true).X;
             int mouseY = InputHandler.GetInstance().GetMousePosition(true).Y;
 
-            if (InputHandler.GetInstance().IsMousePressed(Mouse.Button.Left))
+            //Change button state if clicked
+            if (mouseX >= _position.X && mouseX <= _position.X + _size.X && mouseY >= _position.Y && mouseY <= _position.Y + _size.Y)
             {
-                if (mouseX > _position.X && mouseX < _position.X + Size.X && mouseY > _position.Y && mouseY < _position.Y + _size.Y)
+                if(InputHandler.GetInstance().IsMousePressed(Mouse.Button.Left))
                 {
-                    if (InputHandler.GetInstance().IsMouseClicked(Mouse.Button.Left))
-                    {
-                        Console.WriteLine($"{_name} is pressed");
-                    }
+                    _state = true;
+                }
+                else
+                {
+                    _state = false;
                 }
             }
-            _sprite.Position = _position;
-            _sprite.TextureRect = new IntRect(new Vector2i(0,0), _size);
+
+            //Trigger event when button is clicked
+            if(!_oldState && _state)
+            {
+                ClickedEvent?.Invoke(this, EventArgs.Empty);
+            }
+            //Trigger event when button is released
+            else if(_oldState && !_state)
+            {
+                ReleasedEvent?.Invoke(this, EventArgs.Empty);
+            }
+            //Trigger event when button is pressed
+            if(_state)
+            {
+                PressedEvent?.Invoke(this, EventArgs.Empty);
+            }
+
+            //Update old button state
+            _oldState = _state;
         }
 
         public void Render(RenderWindow w)
         {
-            w.Draw(_sprite);
+            //Render texture if button has one
+            if (_texture)
+            {
+                w.Draw(_sprite);
+            }
+            //Render a rectangle if button has no texture
+            else
+            {
+                RectangleShape shape = new RectangleShape(new Vector2f(_size.X,_size.Y));
+                shape.Position = _position;
+                shape.FillColor = _color;
+                w.Draw(shape);
+            }
         }
 
         /// <summary>
-        /// Get/Set position
+        /// Get/Set button position
         /// </summary>
         public Vector2f Position
         {
@@ -60,22 +112,12 @@ namespace SFML_Engine
         }
 
         /// <summary>
-        /// Get/Set size
+        /// Get/Set button size
         /// </summary>
         public Vector2i Size
         {
             get { return _size; }
             set { _size = value; }
-        }
-
-        public bool Pressed
-        {
-            get { return _pressed; }
-        }
-
-        public bool Clicked
-        {
-            get { return _clicked; }
         }
     }
 }

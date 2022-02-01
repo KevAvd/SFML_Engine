@@ -10,7 +10,9 @@ namespace SFML_Engine
     internal class StateHandler
     {
         GameState _state; //Contains the actual state
+        GameState _nextState; //Contains the next state
         List<GameState> _allStates = new List<GameState>(); //Contains all the possible game state
+        bool _isChanging; //Indicate if the actual state is going to change
 
         /// <summary>
         /// Constructor
@@ -19,6 +21,7 @@ namespace SFML_Engine
         public StateHandler(params GameState[] states)
         {
             AddState(states);
+            if(_allStates.Count > 0) { _state = _allStates[0]; }
         }
 
         /// <summary>
@@ -34,42 +37,44 @@ namespace SFML_Engine
         }
 
         /// <summary>
-        /// Change the current state
+        /// Update the actual state
         /// </summary>
-        /// <param name="name"> Name of the next state </param>
-        public void ChangeState(string name)
+        public void Update()
         {
-            foreach(GameState s in _allStates)
+            if (_isChanging)
             {
-                if (s.Name == name)
-                {
-                    _state = s;
-                    return;
-                }
+                _state = _nextState;
+                _isChanging = false;
             }
-
-            LogHandler.GetInstance().AddLog($"[STATEHANDLER][CHANGESTATE-ERROR] this doesn't contains a state named {name}");
         }
 
         /// <summary>
-        /// Play the actual state
+        /// Change the to the next state in the next update
         /// </summary>
-        /// <param name="w"> Used window </param>
-        /// <param name="dt"> Delta time </param>
-        public void PlayState(RenderWindow w, float dt)
+        /// <param name="nextStateName"></param>
+        public void ChangeState(string nextStateName)
         {
-            if(_state == null)
+            _isChanging = true;
+            foreach(GameState gs in _allStates)
             {
-                LogHandler.GetInstance().AddLog("[STATEHANDLER][PLAYSTATE-ERROR] the actual state is null");
-                return;
+                if(gs.Name == nextStateName) { _nextState = gs; break; }
             }
+        }
 
-            _state.HandleInput();
-            _state.HandleEvent(w);
-            _state.Update(dt);
-            w.Clear();
-            _state.Render(w);
-            w.Display();
+        /// <summary>
+        /// Get the actual state
+        /// </summary>
+        public GameState ActualState
+        {
+            get { return _state; }
+        }
+
+        /// <summary>
+        /// Get all the stored states
+        /// </summary>
+        public List<GameState> AllStates
+        {
+            get { return _allStates; }
         }
     }
 }

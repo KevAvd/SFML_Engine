@@ -13,27 +13,50 @@ namespace SFML_Engine
         float _elapsedTime;
         RenderWindow _window;
 
-        public Game(uint w, uint h, string title, string startState, params GameState[] states)
+        public Game(uint w, uint h, string title, params GameState[] states)
         {
             _window = new RenderWindow(new VideoMode(w, h), title);
             _stateHandler = new StateHandler(states);
-            _stateHandler.ChangeState(startState);
             InputHandler.GetInstance().Window = _window;
         }
 
         public void Run()
         {
-            load();
+            //Load games elements
+            _stateHandler.ActualState.Load();
+
+            //Handles event
+            _window.Closed += WinClose;
+
+            //Game loop
             while (_window.IsOpen)
             {
+                //Get the elapsed time since last frame
                 _elapsedTime = GameClock.GetInstance().ElapsedFrame();
-                _stateHandler.PlayState(_window, _elapsedTime);
+
+                //Dispatch windows events
+                _window.DispatchEvents();
+
+                //Update keyboard's keys and mouse's buttons states 
+                InputHandler.GetInstance().UpdateOld();
+                InputHandler.GetInstance().Update();
+
+                //Update the actual game state
+                _stateHandler.ActualState.Update(_elapsedTime);
+
+                //Render the actual game state
+                _window.Clear();
+                _stateHandler.ActualState.Render(_window);
+                _window.Display();
+
+                //Update the state handler
+                _stateHandler.Update();
             }
         }
 
-        public void load()
+        void WinClose(Object obj, EventArgs e)
         {
-
+            (obj as RenderWindow).Close();
         }
     }
 }
