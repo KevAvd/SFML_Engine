@@ -11,56 +11,56 @@ namespace SFML_Engine
 {
     internal class InputHandler
     {
-        bool[] _oldMouseState = new bool[(int)Mouse.Button.ButtonCount]; //Contains the old states of mouse's buttons
-        bool[] _actMouseState = new bool[(int)Mouse.Button.ButtonCount]; //Contains the actual states of mouse's buttons
-        bool[] _oldState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the old state of keyboard's keys
-        bool[] _actState = new bool[(int)Keyboard.Key.KeyCount]; //Contains the actual state of keyboard's keys
-        public event EventHandler key_clicked_event;
-        public event EventHandler key_pressed_event;
-        public event EventHandler key_released_event;
-
-        static InputHandler _instance = null; //Singleton instance
+        const int NBR_OF_KEYS = (int)Keyboard.Key.KeyCount;
+        const int NBR_OF_BUTTONS = (int)Mouse.Button.ButtonCount;
+        const int STATE_ARRAY_SIZE = NBR_OF_BUTTONS + NBR_OF_KEYS;
+        bool[] _oldState = new bool[STATE_ARRAY_SIZE]; //Contains the old state of keyboard's keys
+        bool[] _actState = new bool[STATE_ARRAY_SIZE]; //Contains the actual state of keyboard's keys
         RenderWindow _window;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="w"> Used window </param>
+        public InputHandler(RenderWindow w)
+        {
+            _window = w;
+        }
 
         /// <summary>
         /// Updates the actual states of keys
         /// </summary>
         public void Update()
         {
-            for(int i = 0; i < (int)Keyboard.Key.KeyCount; i++)
-            {
-                //Update keyboard's keys
-                if (Keyboard.IsKeyPressed((Keyboard.Key)i))
-                {
-                    _actState[i] = true;
-                }
-                else
-                {
-                    _actState[i] = false;
-                }
+            //Update the old state
+            Array.Copy(_actState, _oldState, _actState.Length);
 
-                //Update's mouse's buttons
-                if (i < (int)Mouse.Button.ButtonCount)
+            //Update the actual state
+            for (int i = 0; i < STATE_ARRAY_SIZE; i++)
+            {
+                if(i <= NBR_OF_KEYS)
                 {
-                    if (Mouse.IsButtonPressed((Mouse.Button)i))
+                    if (Keyboard.IsKeyPressed((Keyboard.Key)i))
                     {
-                        _actMouseState[i] = true;
+                        _actState[i] = true;
                     }
                     else
                     {
-                        _actMouseState[i] = false;
+                        _actState[i] = false;
+                    }
+                }
+                else
+                {
+                    if (Mouse.IsButtonPressed((Mouse.Button)i))
+                    {
+                        _actState[i] = true;
+                    }
+                    else
+                    {
+                        _actState[i] = false;
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Updates the old states of keys
-        /// </summary>
-        public void UpdateOld()
-        {
-            Array.Copy(_actState, _oldState, _actState.Length);
-            Array.Copy(_actMouseState, _oldMouseState, _actMouseState.Length);
         }
 
         /// <summary>
@@ -68,9 +68,25 @@ namespace SFML_Engine
         /// </summary>
         /// <param name="key"> Key to verify </param>
         /// <returns> True if key is pressed </returns>
-        public bool IsKeyPressed(Keyboard.Key key)
+        public bool IsPressed(Keyboard.Key key)
         {
             if (_actState[(int)key])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Verify if a mouse button is pressed
+        /// </summary>
+        /// <param name="button"> Button to verify </param>
+        /// <returns> True if button is pressed </returns>
+        public bool IsPressed(Mouse.Button button)
+        {
+            if (_actState[NBR_OF_KEYS + (int)button])
             {
                 return true;
             }
@@ -83,39 +99,9 @@ namespace SFML_Engine
         /// </summary>
         /// <param name="key"> Key to verify </param>
         /// <returns> True if key is clicked </returns>
-        public bool IsKeyClicked(Keyboard.Key key)
+        public bool IsClicked(Keyboard.Key key)
         {
             if(!_oldState[(int)key] && _actState[(int)key])
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Verify if a key is released
-        /// </summary>
-        /// <param name="key"> Key to verify </param>
-        /// <returns> True if key is released </returns>
-        public bool IsKeyReleased(Keyboard.Key key)
-        {
-            if (_oldState[(int)key] && !_actState[(int)key])
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Verify if a mouse button is pressed
-        /// </summary>
-        /// <param name="button"> Button to verify </param>
-        /// <returns> True if button is pressed </returns>
-        public bool IsMousePressed(Mouse.Button button)
-        {
-            if (_actMouseState[(int)button])
             {
                 return true;
             }
@@ -128,9 +114,24 @@ namespace SFML_Engine
         /// </summary>
         /// <param name="button"> Button to verify </param>
         /// <returns> True if button is clicked </returns>
-        public bool IsMouseClicked(Mouse.Button button)
+        public bool IsClicked(Mouse.Button button)
         {
-            if (!_oldMouseState[(int)button] && _actMouseState[(int)button])
+            if (!_oldState[NBR_OF_KEYS + (int)button] && _actState[NBR_OF_KEYS + (int)button])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Verify if a key is released
+        /// </summary>
+        /// <param name="key"> Key to verify </param>
+        /// <returns> True if key is released </returns>
+        public bool IsReleased(Keyboard.Key key)
+        {
+            if (_oldState[(int)key] && !_actState[(int)key])
             {
                 return true;
             }
@@ -143,9 +144,9 @@ namespace SFML_Engine
         /// </summary>
         /// <param name="button"> Button to verify </param>
         /// <returns> True if button is released </returns>
-        public bool IsMouseReleased(Mouse.Button button)
+        public bool IsReleased(Mouse.Button button)
         {
-            if (_oldState[(int)button] && !_actState[(int)button])
+            if (_oldState[NBR_OF_KEYS + (int)button] && !_actState[NBR_OF_KEYS + (int)button])
             {
                 return true;
             }
@@ -168,29 +169,6 @@ namespace SFML_Engine
             {
                 return Mouse.GetPosition();
             }
-        }
-
-        /// <summary>
-        /// Get the instance of this singleton class
-        /// </summary>
-        /// <returns> Instance of this class </returns>
-        static public InputHandler GetInstance()
-        {
-            if(_instance == null)
-            {
-                _instance = new InputHandler();
-            }
-
-            return _instance;
-        }
-
-        /// <summary>
-        /// Get/Set the used window
-        /// </summary>
-        public RenderWindow Window
-        {
-            get { return _window; }
-            set { _window = value; }
         }
     }
 }

@@ -3,27 +3,53 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-Menu menu = new Menu("Menu");
-Game game = new Game(800, 600, "My game", menu);
+Game game = new Game(800, 600, "My game");
 game.Run();
+LogHandler.GetInstance().ShowLogs();
+Console.ReadLine();
 
 class Menu : GameState
 {
-    AssetManager am = new AssetManager(@"C:\Users\drimi\OneDrive\Bureau\TestDir", @"C:\Users\drimi\OneDrive\Bureau\TestDirImg");
-    Button button;
+    public Menu(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w) : base(name, sh, am, ih, gc, w)
+    {
+    }
 
-    public Menu(string name) : base(name) { }
     public override void Load()
     {
-        am.Loadfiles();
-        button = new Button("btn1", new Vector2f(350, 275), new Vector2i(100, 50), Color.Red);
+        _clearColor = Color.Yellow;
     }
-    override public void Update(float dt)
+    public override void Update()
     {
-        button.Update();
+        if (_inputHandler.IsClicked(Keyboard.Key.Q))
+        {
+            _stateHandler.SetNextState(typeof(Gaming).Name);
+        }
     }
-    override public void Render(RenderWindow w)
+    public override void Render()
     {
-        button.Render(w);
+
+    }
+}
+
+class Gaming : GameState
+{
+    public Gaming(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w) : base(name, sh, am, ih, gc, w)
+    {
+    }
+
+    public override void Load()
+    {
+        _clearColor = Color.Red;
+    }
+    public override void Update()
+    {
+        if (_inputHandler.IsClicked(Keyboard.Key.Q))
+        {
+            _stateHandler.SetNextState(typeof(Menu).Name);
+        }
+    }
+    public override void Render()
+    {
+
     }
 }

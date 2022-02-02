@@ -11,26 +11,30 @@ namespace SFML_Engine
     {
         DateTime _start;
         DateTime _frameTime;
-        static GameClock _instance = null;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        GameClock()
+        public GameClock()
         {
             _start = DateTime.Now;
         }
 
         /// <summary>
-        /// Get the elapsed time of the last frame
+        /// Get the elapsed time since the last frame
         /// </summary>
-        /// <returns> Last frame elapsed time </returns>
+        /// <returns> Elapsed time since the last frame in seconds </returns>
         public float ElapsedFrame()
         {
-            float elapsedTime = (float)(DateTime.Now - _frameTime).TotalSeconds;
-            _frameTime = DateTime.Now;
+            return (float)(DateTime.Now - _frameTime).TotalSeconds;
+        }
 
-            return elapsedTime;
+        /// <summary>
+        /// Reset the initiale frame time
+        /// </summary>
+        public void ResetFrame()
+        {
+            _frameTime = DateTime.Now;
         }
 
         /// <summary>
@@ -40,16 +44,6 @@ namespace SFML_Engine
         public float ElapsedStart()
         {
             return (float)(DateTime.Now - _start).TotalSeconds;
-        }
-
-        static public GameClock GetInstance()
-        {
-            if(_instance == null)
-            {
-                _instance = new GameClock();
-            }
-
-            return _instance;
         }
 
         /// <summary>

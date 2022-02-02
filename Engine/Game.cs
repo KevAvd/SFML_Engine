@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SFML.System;
 using SFML.Window;
 using SFML.Graphics;
@@ -10,43 +11,89 @@ namespace SFML_Engine
     internal class Game
     {
         StateHandler _stateHandler;
-        float _elapsedTime;
+        AssetManager _assetManager;
+        InputHandler _inputHandler;
+        GameClock _gameClock;
         RenderWindow _window;
 
-        public Game(uint w, uint h, string title, params GameState[] states)
+        public Game(uint w, uint h, string title)
         {
             _window = new RenderWindow(new VideoMode(w, h), title);
-            _stateHandler = new StateHandler(states);
-            InputHandler.GetInstance().Window = _window;
+            _stateHandler = new StateHandler();
+            _assetManager = new AssetManager();
+            _inputHandler = new InputHandler(_window);
+            _gameClock = new GameClock();
+            _stateHandler.AddState(LoadGameStates());
+            if (_stateHandler.AllStates.Count > 0)
+            {
+                _stateHandler.ChangeActualState(_stateHandler.AllStates[0].Name);
+            }
+        }
+
+        /// <summary>
+        /// Loads all the game state created by the user
+        /// </summary>
+        GameState[] LoadGameStates()
+        {
+            //All game state to return
+            List<GameState> toReturn = new List<GameState>();
+
+            //Get all types in the current executing assembly
+            Type[] types = Assembly.GetExecutingAssembly().GetTypes();
+
+            //Instantiate all sub class of game state
+            foreach (Type t in types)
+            {
+                if (t.IsSubclassOf(typeof(GameState)))
+                {
+                    toReturn.Add(Activator.CreateInstance(t, t.Name, _stateHandler, _assetManager, _inputHandler, _gameClock, _window) as GameState);
+                }
+            }
+
+            if(toReturn.Count == 0)
+            {
+                LogHandler.GetInstance().AddLog("[GAME][LOADGAMESTATE-ERROR] No game state found");
+            }
+
+            return toReturn.ToArray();
         }
 
         public void Run()
         {
-            //Load games elements
-            _stateHandler.ActualState.Load();
+            //End program if no game state
+            if (_stateHandler.ActualState == null)
+            {
+                LogHandler.GetInstance().AddLog("[GAME][RUN-ERROR] No game state");
+                return;
+            }
 
-            //Handles event
+            //Loads games states
+            foreach(GameState gs in _stateHandler.AllStates)
+            {
+                gs.Load();
+            }
+
+            //Subscribe to windows event
             _window.Closed += WinClose;
 
             //Game loop
             while (_window.IsOpen)
             {
-                //Get the elapsed time since last frame
-                _elapsedTime = GameClock.GetInstance().ElapsedFrame();
+                //Reset the frame time
+                _gameClock.ResetFrame();
 
                 //Dispatch windows events
                 _window.DispatchEvents();
 
                 //Update keyboard's keys and mouse's buttons states 
-                InputHandler.GetInstance().UpdateOld();
-                InputHandler.GetInstance().Update();
+                _inputHandler.Update();
 
                 //Update the actual game state
-                _stateHandler.ActualState.Update(_elapsedTime);
+                _stateHandler.ActualState.Update();
 
                 //Render the actual game state
-                _window.Clear();
-                _stateHandler.ActualState.Render(_window);
+                _window.Clear(_stateHandler.ActualState.ClearColor);
+                _stateHandler.ActualState.Render();
                 _window.Display();
 
                 //Update the state handler

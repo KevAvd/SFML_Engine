@@ -49,20 +49,20 @@ namespace SFML_Engine
         public void Update()
         {
             //Get mouse position
-            int mouseX = InputHandler.GetInstance().GetMousePosition(true).X;
-            int mouseY = InputHandler.GetInstance().GetMousePosition(true).Y;
+            int mouseX = 0;
+            int mouseY = 0;
 
             //Change button state if clicked
             if (mouseX >= _position.X && mouseX <= _position.X + _size.X && mouseY >= _position.Y && mouseY <= _position.Y + _size.Y)
             {
-                if(InputHandler.GetInstance().IsMousePressed(Mouse.Button.Left))
-                {
-                    _state = true;
-                }
-                else
-                {
-                    _state = false;
-                }
+                //if(InputHandler.GetInstance().IsMousePressed(Mouse.Button.Left))
+                //{
+                //    _state = true;
+                //}
+                //else
+                //{
+                //    _state = false;
+                //}
             }
 
             //Trigger event when button is clicked
