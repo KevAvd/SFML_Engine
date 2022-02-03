@@ -16,9 +16,29 @@ namespace SFML_Engine
         /// <summary>
         /// Recursively load files from root directory
         /// </summary>
-        public void Loadfiles()
+        public void Loadfiles(string path)
         {
+            FileInfo fi;
+            string[] paths = Directory.GetFiles(path);
 
+            foreach(string p in paths)
+            {
+                fi = new FileInfo(p);
+                if (fi.Extension.ToLower() == ".ttf")
+                {
+                    _fonts.Add(fi.Name, new Font(fi.FullName));
+                }
+                if (fi.Extension.ToLower() == ".png" || fi.Extension.ToLower() == ".jpeg")
+                {
+                    _textures.Add(fi.Name, new Texture(fi.FullName));
+                }
+            }
+
+            paths = Directory.GetDirectories(path);
+            if(path.Length > 0)
+            {
+                foreach(string p in paths) { Loadfiles(p); }
+            }
         }
 
         /// <summary>
