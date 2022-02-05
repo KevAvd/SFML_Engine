@@ -10,46 +10,53 @@ Console.ReadLine();
 
 class Menu : GameState
 {
-    public Menu(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w) : base(name, sh, am, ih, gc, w)
-    {
-    }
-
+    float radius;
+    Color color;
+    bool visible = false;
+    Slider rad;
+    Slider sldRed;
+    Slider sldGreen;
+    Slider sldBlue;
     public override void Load()
     {
-        _clearColor = Color.Yellow;
+        _assetManager.Loadfiles(@"C:\Users\drimi\OneDrive\Bureau\Asset");
+        Button btn1 = _widgetHandler.CreateButton("btn1", new Vector2f(100, 50), new Vector2f(0, 0), Color.Red, _assetManager.GetFont("ARIAL.TTF"));
+        btn1.ClickedEvent += btn1_click;
+        rad = _widgetHandler.CreateSlider("sldr1", new Vector2f(300, 10), new Vector2f(450, 20), Color.White, _assetManager.GetFont("ARIAL.TTF"));
+        sldRed = _widgetHandler.CreateSlider("sldr2", new Vector2f(300, 10), new Vector2f(450, 80), Color.White, _assetManager.GetFont("ARIAL.TTF"));
+        sldGreen = _widgetHandler.CreateSlider("sldr3", new Vector2f(300, 10), new Vector2f(450, 140), Color.White, _assetManager.GetFont("ARIAL.TTF"));
+        sldBlue = _widgetHandler.CreateSlider("sldr4", new Vector2f(300, 10), new Vector2f(450, 200), Color.White, _assetManager.GetFont("ARIAL.TTF"));
+        rad.Min = 1;
+        rad.Max = 500;
+        sldRed.Min = 0;
+        sldRed.Max = 255;
+        sldGreen.Min = 0;
+        sldGreen.Max = 255;
+        sldBlue.Min = 0;
+        sldBlue.Max = 255;
+
     }
     public override void Update()
     {
-        if (_inputHandler.IsClicked(Keyboard.Key.Q))
-        {
-            _stateHandler.SetNextState(typeof(Gaming).Name);
-        }
+        radius = rad.Value;
+        color = new Color((byte)sldRed.Value, (byte)sldGreen.Value, (byte)sldBlue.Value);
     }
     public override void Render()
     {
-
-    }
-}
-
-class Gaming : GameState
-{
-    public Gaming(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w) : base(name, sh, am, ih, gc, w)
-    {
-    }
-
-    public override void Load()
-    {
-        _clearColor = Color.Red;
-    }
-    public override void Update()
-    {
-        if (_inputHandler.IsClicked(Keyboard.Key.Q))
+        if (visible)
         {
-            _stateHandler.SetNextState(typeof(Menu).Name);
+            CircleShape shape = new CircleShape(radius);
+            shape.Origin = new Vector2f(radius, radius);
+            shape.Position = new Vector2f(400, 300);
+            shape.FillColor = color;
+            _window.Draw(shape);
         }
     }
-    public override void Render()
-    {
 
+    void btn1_click (object sender, EventArgs e)
+    {
+        visible = !visible;
     }
+
+    public Menu(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w, WidgetHandler wh) : base(name, sh, am, ih, gc, w, wh) { }
 }

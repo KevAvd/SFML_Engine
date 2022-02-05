@@ -38,7 +38,7 @@ namespace SFML_Engine
             //Update the actual state
             for (int i = 0; i < STATE_ARRAY_SIZE; i++)
             {
-                if(i <= NBR_OF_KEYS)
+                if(i < NBR_OF_KEYS)
                 {
                     if (Keyboard.IsKeyPressed((Keyboard.Key)i))
                     {
@@ -51,7 +51,7 @@ namespace SFML_Engine
                 }
                 else
                 {
-                    if (Mouse.IsButtonPressed((Mouse.Button)i))
+                    if (Mouse.IsButtonPressed((Mouse.Button)(i - NBR_OF_KEYS)))
                     {
                         _actState[i] = true;
                     }

@@ -18,8 +18,8 @@ namespace SFML_Engine
         protected InputHandler _inputHandler;
         protected GameClock _gameClock;
         protected RenderWindow _window;
+        protected WidgetHandler _widgetHandler;
         protected Color _clearColor; //Background color
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -29,7 +29,8 @@ namespace SFML_Engine
         /// <param name="ih"> Input handler </param>
         /// <param name="gc"> game clock </param>
         /// <param name="w"> Render window </param>
-        public GameState(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w)
+        /// <param name="wh"> Widget handler </param>
+        public GameState(string name, StateHandler sh, AssetManager am, InputHandler ih, GameClock gc, RenderWindow w, WidgetHandler wh)
         {
             _name = name;
             _stateHandler = sh;
@@ -37,6 +38,7 @@ namespace SFML_Engine
             _inputHandler = ih;
             _gameClock = gc;
             _window = w;
+            _widgetHandler = wh;
         }
         /// <summary>
         /// Loads all elements necessary

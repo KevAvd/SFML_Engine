@@ -15,6 +15,7 @@ namespace SFML_Engine
         InputHandler _inputHandler;
         GameClock _gameClock;
         RenderWindow _window;
+        WidgetHandler _widgetHandler;
 
         public Game(uint w, uint h, string title)
         {
@@ -22,6 +23,7 @@ namespace SFML_Engine
             _stateHandler = new StateHandler();
             _assetManager = new AssetManager();
             _inputHandler = new InputHandler(_window);
+            _widgetHandler = new WidgetHandler(_inputHandler);
             _gameClock = new GameClock();
             _stateHandler.AddState(LoadGameStates());
             if (_stateHandler.AllStates.Count > 0)
@@ -46,7 +48,7 @@ namespace SFML_Engine
             {
                 if (t.IsSubclassOf(typeof(GameState)))
                 {
-                    toReturn.Add(Activator.CreateInstance(t, t.Name, _stateHandler, _assetManager, _inputHandler, _gameClock, _window) as GameState);
+                    toReturn.Add(Activator.CreateInstance(t, t.Name, _stateHandler, _assetManager, _inputHandler, _gameClock, _window, _widgetHandler) as GameState);
                 }
             }
 
@@ -88,12 +90,22 @@ namespace SFML_Engine
                 //Update keyboard's keys and mouse's buttons states 
                 _inputHandler.Update();
 
+                //Update widgets
+                _widgetHandler.Update(_gameClock.ElapsedFrame());
+
                 //Update the actual game state
                 _stateHandler.ActualState.Update();
 
-                //Render the actual game state
+                //Clear last image
                 _window.Clear(_stateHandler.ActualState.ClearColor);
+
+                //Render the actual game state
                 _stateHandler.ActualState.Render();
+
+                //Render widget
+                _widgetHandler.Render(_window);
+
+                //Display new image
                 _window.Display();
 
                 //Update the state handler
