@@ -12,6 +12,7 @@ namespace SFML_Engine
     {
         List<Widget> _widgets = new List<Widget>(); //List of widget
         InputHandler _inputHandler; // Handles input
+        Font _font;
 
         /// <summary>
         /// Constructor
@@ -25,14 +26,9 @@ namespace SFML_Engine
         /// <summary>
         /// Add a button
         /// </summary>
-        /// <param name="n"> Name </param>
-        /// <param name="s"> Size </param>
-        /// <param name="p"> Position </param>
-        /// <param name="c"> Color </param>
-        /// <param name="f"> Font </param>
-        public Button CreateButton(string n, Vector2f s, Vector2f p, Color c, Font f)
+        public Button CreateButton()
         {
-            Button btn = new Button(n, s, p, c, _inputHandler, f);
+            Button btn = new Button(_font, _inputHandler);
             _widgets.Add(btn);
             return btn;
         }
@@ -40,16 +36,23 @@ namespace SFML_Engine
         /// <summary>
         /// Add a slider
         /// </summary>
-        /// <param name="n"> Name </param>
-        /// <param name="s"> Size </param>
-        /// <param name="p"> Position </param>
-        /// <param name="c"> Color </param>
-        /// <param name="f"> Font </param>
-        public Slider CreateSlider(string n, Vector2f s, Vector2f p, Color c, Font f)
+        /// <param name="txt"> Slider's text </param>
+        public Slider CreateSlider(string txt)
         {
-            Slider slider = new Slider(n, s, p, c, _inputHandler, f);
+            Slider slider = new Slider(txt, _font, _inputHandler);
             _widgets.Add(slider);
             return slider;
+        }
+
+        /// <summary>
+        /// Add a label
+        /// </summary>
+        /// <returns> The Created label </returns>
+        public Label CreateLabel()
+        {
+            Label lbl = new Label(_font, _inputHandler);
+            _widgets.Add(lbl);
+            return lbl;
         }
 
         /// <summary>
@@ -77,19 +80,12 @@ namespace SFML_Engine
         }
 
         /// <summary>
-        /// Return widget with searched name
+        /// Get/Set font
         /// </summary>
-        /// <param name="name"> Name of the widget </param>
-        /// <returns> Widget </returns>
-        public Widget GetWidget(string name)
+        public Font Font
         {
-            foreach (Widget w in _widgets)
-            {
-                if(w.Name == name) { return w; }
-            }
-
-            LogHandler.GetInstance().AddLog($"[WIDGETHANDLER][GETWIDGET-ERROR] no widget with name {name} found");
-            return null;
+            get { return _font; }
+            set { _font = value; }
         }
     }
 }

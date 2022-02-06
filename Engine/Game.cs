@@ -19,7 +19,7 @@ namespace SFML_Engine
 
         public Game(uint w, uint h, string title)
         {
-            _window = new RenderWindow(new VideoMode(w, h), title);
+            _window = new RenderWindow(new VideoMode(w, h), title, Styles.Fullscreen);
             _stateHandler = new StateHandler();
             _assetManager = new AssetManager();
             _inputHandler = new InputHandler(_window);

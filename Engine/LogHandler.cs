@@ -17,7 +17,7 @@ namespace SFML_Engine
         /// <param name="toAdd"> Log to add </param>
         public void AddLog(string toAdd)
         {
-            logs += toAdd + $" [DD/MM/YYYY]{DateTime.Now}:{DateTime.Now.Millisecond}[HH:MM:SS:(MS)(MS)]\n";
+            logs += toAdd + $" [DD/MM/YYYY]{DateTime.Now}:{DateTime.Now.Millisecond}[HH:MM:SS:MM]\n";
         }
 
         /// <summary>

@@ -11,18 +11,22 @@ namespace SFML_Engine
 {
     internal class Slider : Widget
     {
-        float _t;
-        float _min;
-        float _max;
-        float _value;
-        bool _drag;
-        Text _text;
-        Vector2f _sliderPos;
-        Vector2f _sliderSize;
+        float _t; //Interpolated value
+        float _min; //Min value
+        float _max; //Max value
+        float _value; //Value
+        bool _drag; //Is dragged
+        Text _text; //Slider's value in text
+        Text _textValue; //Slider's text
+        Vector2f _sliderPos; //Slider's position
+        Vector2f _sliderSize; //Slider's size
 
-        public Slider(string n, Vector2f s, Vector2f p, Color c, InputHandler ih, Font f) : base(n, s, p, c, ih)
+        public Slider(string txt, Font f, InputHandler ih) : base(ih)
         {
-            _text = new Text("", f);
+            _text = new Text(txt, f);
+            _textValue = new Text("", f);
+            _size = new Vector2f(300,1);
+            _textValue.Scale = new Vector2f(0.5f, 0.5f);
             _text.Scale = new Vector2f(0.5f, 0.5f);
             _sliderSize = new Vector2f(10, 30);
             _sliderPos = new Vector2f(_position.X, _position.Y - _sliderSize.Y / 2f);
@@ -40,30 +44,33 @@ namespace SFML_Engine
             slider.Position = _sliderPos;
             slider.OutlineColor = Color.Black;
             slider.OutlineThickness = 2;
+            _textValue.DisplayedString = $"{_value:0.0}";
+            _textValue.Position = new Vector2f(_sliderPos.X - _textValue.CharacterSize / 2f, _sliderPos.Y + 30);
+            _text.Position = new Vector2f(_position.X - 5, _position.Y - 35);
             w.Draw(bar);
             w.Draw(slider);
-            _text.DisplayedString = $"{_value:0.0}";
-            _text.Position = new Vector2f(_sliderPos.X - _text.CharacterSize / 2f, _sliderPos.Y + 30);
+            w.Draw(_textValue);
             w.Draw(_text);
         }
 
         public override void Update(float dt)
         {
+            _sliderPos.X = Math.Clamp(_sliderPos.X, _position.X, _position.X + _size.X);
+            _sliderPos.Y = _position.Y - _sliderSize.Y / 2f;
             float mouseX = _inputHandler.GetMousePosition(true).X;
             float mouseY = _inputHandler.GetMousePosition(true).Y;
 
-            if (_inputHandler.IsPressed(Mouse.Button.Left))
+            if (mouseX >= _sliderPos.X && mouseX <= _sliderPos.X + _sliderSize.X && mouseY >= _sliderPos.Y && mouseY <= _sliderPos.Y + _sliderSize.Y)
             {
-                if (mouseX >= _sliderPos.X && mouseX <= _sliderPos.X + _sliderSize.X && mouseY >= _sliderPos.Y && mouseY <= _sliderPos.Y + _sliderSize.Y)
+                if (_inputHandler.IsClicked(Mouse.Button.Left))
                 {
                     _drag = true;
                 }
             }
-            else
+            if(_inputHandler.IsReleased(Mouse.Button.Left) && _drag)
             {
                 _drag = false;
             }
-
             if (_drag)
             {
                 _sliderPos.X = Math.Clamp(mouseX, _position.X, _position.X + _size.X);
@@ -105,6 +112,15 @@ namespace SFML_Engine
         {
             get { return _max; }
             set { _max = value; }
+        }
+
+        /// <summary>
+        /// Get/Set slider text
+        /// </summary>
+        public string Text
+        {
+            get { return _text.DisplayedString; }
+            set { _text.DisplayedString = value; }
         }
     }
 }

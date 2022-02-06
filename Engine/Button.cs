@@ -19,9 +19,9 @@ namespace SFML_Engine
         public event EventHandler ReleasedEvent; //Released event
 
 
-        public Button(string n, Vector2f s, Vector2f p, Color c, InputHandler ih, Font f) : base(n,s,p,c,ih)
+        public Button(Font f, InputHandler ih) : base(ih)
         {
-            _text = new Text(_name, f);
+            _text = new Text("", f);
         }
 
         public override void Update(float dt)
@@ -65,7 +65,7 @@ namespace SFML_Engine
 
         public override void Render(RenderWindow w)
         {
-            RectangleShape shape = new RectangleShape(new Vector2f(_size.X,_size.Y));
+            RectangleShape shape = new RectangleShape(_size);
             shape.Position = _position;
             _text.Position = _position;
             shape.FillColor = _color;
@@ -76,10 +76,10 @@ namespace SFML_Engine
         /// <summary>
         /// Get/Set text
         /// </summary>
-        public Text Text
+        public string Text
         {
-            get { return _text; }
-            set { _text = value; }
+            get { return _text.DisplayedString; }
+            set { _text.DisplayedString = value; }
         }
     }
 }

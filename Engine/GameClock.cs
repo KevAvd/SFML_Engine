@@ -11,6 +11,7 @@ namespace SFML_Engine
     {
         DateTime _start;
         DateTime _frameTime;
+        float _elapsedTime;
 
         /// <summary>
         /// Constructor
@@ -26,7 +27,7 @@ namespace SFML_Engine
         /// <returns> Elapsed time since the last frame in seconds </returns>
         public float ElapsedFrame()
         {
-            return (float)(DateTime.Now - _frameTime).TotalSeconds;
+            return _elapsedTime;
         }
 
         /// <summary>
@@ -34,6 +35,7 @@ namespace SFML_Engine
         /// </summary>
         public void ResetFrame()
         {
+            _elapsedTime = (float)(DateTime.Now - _frameTime).TotalSeconds;
             _frameTime = DateTime.Now;
         }
 
