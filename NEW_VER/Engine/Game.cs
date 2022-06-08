@@ -179,57 +179,5 @@ namespace SFML_Engine
         {
             _window.Close();
         }
-
-        private void DetectCollision()
-        {
-            foreach(GameObject obj in _state.Objects)
-            {
-                if(obj.PhysicObject.GetType() == typeof(AABB))
-                {
-
-                }
-
-                if (obj.PhysicObject.GetType() == typeof(Ray))
-                {
-
-                }
-
-                if (obj.PhysicObject.GetType() == typeof(Circle))
-                {
-
-                }
-            }
-        }
-
-        void DetectAABBCollisionWith(GameObject obj)
-        {
-            if(obj.PhysicState == PhysicState.NOCLIP)
-            {
-                return;
-            }
-
-            foreach (GameObject obj2 in _state.Objects)
-            {
-                if (obj2.PhysicState == PhysicState.NOCLIP || obj2 == obj)
-                {
-                    continue;
-                }
-
-                if (obj2.PhysicObject.GetType() == typeof(AABB))
-                {
-                    
-                }
-
-                if (obj2.PhysicObject.GetType() == typeof(Ray))
-                {
-
-                }
-
-                if (obj2.PhysicObject.GetType() == typeof(Circle))
-                {
-
-                }
-            }
-        }
     }
 }

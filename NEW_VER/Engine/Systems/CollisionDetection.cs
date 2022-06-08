@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
 using SFML_Engine.GameObjects.PhysicObjects;
+using SFML_Engine.GameObjects;
 using SFML_Engine.Mathematics;
 
 namespace SFML_Engine.Systems
@@ -202,49 +203,77 @@ namespace SFML_Engine.Systems
         /// </summary>
         /// <param name="obj1"> Physic object to check </param>
         /// <param name="obj2"> Physic object to check </param>
+        /// <param name="type"> Type of collision </param>
         /// <returns> True if collision </returns>
-        public static bool PHYSOBJ_PHYSOBJ(PhysicObject obj1, PhysicObject obj2)
+        public static bool PHYSOBJ_PHYSOBJ(PhysicObject obj1, PhysicObject obj2, out Collision.CollisionType type)
         {
             if(obj1.GetType() == typeof(AABB))
             {
                 if(obj2.GetType() == typeof(AABB))
                 {
+                    type = Collision.CollisionType.AABB_AABB;
                     return AABB_AABB(obj1 as AABB, obj2 as AABB);
                 }
 
-                if(obj2.GetType() == typeof(Ray))
+                else if (obj2.GetType() == typeof(Ray))
                 {
+                    type = Collision.CollisionType.AABB_RAY;
                     return AABB_RAY(obj1 as AABB, obj2 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
                 }
 
-                if(obj2.GetType() == typeof(Circle))
+                else if (obj2.GetType() == typeof(Circle))
                 {
+                    type = Collision.CollisionType.AABB_CIRCLE;
                     return CIRCLE_AABB(obj2 as Circle, obj1 as AABB);
                 }
             }
 
-            if(obj1.GetType() == typeof(Ray))
+            else if(obj1.GetType() == typeof(Ray))
             {
                 if(obj2.GetType() == typeof(AABB))
                 {
+                    type = Collision.CollisionType.AABB_RAY;
                     return AABB_RAY(obj2 as AABB, obj1 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
                 }
             }
 
-            if(obj1.GetType() == typeof(Circle))
+            else if(obj1.GetType() == typeof(Circle))
             {
                 if(obj2.GetType() == typeof(Circle))
                 {
+                    type = Collision.CollisionType.CIRCLE_CIRCLE;
                     return CIRCLE_CIRCLE(obj1 as Circle, obj2 as Circle);
                 }
 
-                if(obj2.GetType() == typeof(AABB))
+                else if(obj2.GetType() == typeof(AABB))
                 {
+                    type = Collision.CollisionType.AABB_CIRCLE;
                     return CIRCLE_AABB(obj1 as Circle, obj2 as AABB);
                 }
             }
 
+            type = Collision.CollisionType.AABB_AABB;
             return false;
+        }
+
+        /// <summary>
+        /// Detect all collision in a game state
+        /// </summary>
+        /// <param name="state"></param>
+        public static void DetectAllCollision(GameState state)
+        {
+            foreach(GameObject obj1 in state.Objects)
+            {
+                foreach (GameObject obj2 in state.Objects)
+                {
+                    if(obj1 == obj2) { continue; }
+
+                    if(PHYSOBJ_PHYSOBJ(obj1.PhysicObject, obj2.PhysicObject, out Collision.CollisionType type))
+                    {
+                        state.AddCollision(new Collision(obj1, obj2, type));
+                    }
+                }
+            }
         }
     }
 }

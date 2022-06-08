@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML_Engine.GameObjects;
+using SFML_Engine.Systems;
 
 namespace SFML_Engine
 {
     abstract class GameState
     {
         List<GameObject> _gameObjects = new List<GameObject>();
+        List<Collision> _collisions = new List<Collision>();
         string _name;
         Game _game;
 
@@ -17,6 +19,12 @@ namespace SFML_Engine
         /// Get all game objects
         /// </summary>
         public GameObject[] Objects { get => _gameObjects.ToArray(); }
+
+        /// <summary>
+        /// Get all game objects
+        /// </summary>
+        public Collision[] Collisions { get => _collisions.ToArray(); }
+
 
         /// <summary>
         /// Get/Set name
@@ -64,6 +72,23 @@ namespace SFML_Engine
                 (obj as ScriptObject).OnStart();
             }
             _gameObjects.Add(obj);
+        }
+
+        /// <summary>
+        /// Add a collision
+        /// </summary>
+        /// <param name="col"> Collision to add </param>
+        public void AddCollision(Collision col)
+        {
+            _collisions.Add(col);
+        }
+
+        /// <summary>
+        /// Clear all collisions
+        /// </summary>
+        public void ClearCollisions()
+        {
+            _collisions.Clear();
         }
     }
 }
