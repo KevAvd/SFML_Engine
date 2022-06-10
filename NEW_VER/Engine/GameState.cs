@@ -75,20 +75,31 @@ namespace SFML_Engine
         }
 
         /// <summary>
-        /// Add a collision
-        /// </summary>
-        /// <param name="col"> Collision to add </param>
-        public void AddCollision(Collision col)
-        {
-            _collisions.Add(col);
-        }
-
-        /// <summary>
         /// Clear all collisions
         /// </summary>
         public void ClearCollisions()
         {
             _collisions.Clear();
+        }
+
+        /// <summary>
+        /// Detect all collision in a game state
+        /// </summary>
+        /// <param name="state"></param>
+        public void DetectAllCollision()
+        {
+            foreach (GameObject obj1 in _gameObjects)
+            {
+                foreach (GameObject obj2 in _gameObjects)
+                {
+                    if (obj1 == obj2) { continue; }
+
+                    if (CollisionDetection.GAMEOBJ_GAMEOBJ(obj1, obj2, out Collision collision))
+                    {
+                        _collisions.Add(collision);
+                    }
+                }
+            }
         }
     }
 }

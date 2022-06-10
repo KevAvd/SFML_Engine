@@ -18,22 +18,21 @@ namespace SFML_Engine.Systems
         /// <param name="box1"> AABB to check </param>
         /// <param name="ray"> Ray to check </param>
         /// <param name="pNear"> Near collision point </param>
-        /// <param name="pFar"> Fat collision point </param>
+        /// <param name="pFar"> Far collision point </param>
         /// <param name="normal"> Surface normal of the near collision point </param>
         /// <returns> True if collision </returns>
         public static bool AABB_RAY(AABB box1, Ray ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal)
         {
+            //Init
+            pNear = new Vector2f(0, 0);               //Near collision point
+            pFar = new Vector2f(0, 0);                //Far collision point
+            normal = new Vector2f(0, 0);              //Surface normal of the near collision point
             float swap;                               //Used for swaping two values
             Vector2f[] aabbCoords = box1.GetPoints(); //Contains AABB's coords
             Vector2f[] rayCoords = ray.GetPoints();   //Contains ray's coords
             Vector2f d = rayCoords[1] - rayCoords[0]; //Ray distance
             Vector2f tNear = new Vector2f((aabbCoords[0].X - rayCoords[0].X) / d.X, (aabbCoords[0].Y - rayCoords[0].Y) / d.Y);   //time to near collision
             Vector2f tFar = new Vector2f((aabbCoords[2].X - rayCoords[0].X) / d.X, (aabbCoords[2].Y - rayCoords[0].Y) / d.Y);    //time to far collision
-
-            //Init out parametres
-            pNear = new Vector2f(0, 0);
-            pFar = new Vector2f(0, 0);
-            normal = new Vector2f(0, 0);
 
             //Sort values
             if (tNear.X > tFar.X)
@@ -61,28 +60,8 @@ namespace SFML_Engine.Systems
             pFar = rayCoords[0] + tHitFar * d;
 
             //Find surface normal of the AABB at collision point
-            if(tNear.X > tNear.Y)
-            {
-                if(d.X < 0)
-                {
-                    normal = new Vector2f(1, 0);
-                }
-                else
-                {
-                    normal = new Vector2f(-1, 0);
-                }
-            }
-            else if (tNear.X < tNear.Y)
-            {
-                if(d.Y < 0)
-                {
-                    normal = new Vector2f(0, 1);
-                }
-                else
-                {
-                    normal = new Vector2f(0, -1);
-                }
-            }
+            if (tNear.X > tNear.Y) { normal = d.X < 0 ? new Vector2f(1, 0) : new Vector2f(-1, 0); }
+            else if (tNear.X < tNear.Y) { normal = d.Y < 0 ? new Vector2f(0, 1) : new Vector2f(0, -1); }
 
             return true;
         } 
@@ -152,47 +131,45 @@ namespace SFML_Engine.Systems
         /// <param name="circle"> Circle to check </param>
         /// <param name="box"> AABB to check </param>
         /// <returns> True if collision </returns>
-        public static bool CIRCLE_AABB(Circle circle, AABB box)
+        public static bool CIRCLE_AABB(Circle circle, AABB box, out Vector2f pNear, out Vector2f normal)
         {
-            Vector2f contactPoint;
-            Vector2f circlePosition = circle.GetPoints()[0];
-            
+            //Init
+            pNear = new Vector2f(0, 0);
+            normal = new Vector2f(0, 0);
             float half_w = box.Width / 2.0f;
             float half_h = box.Height / 2.0f;
+            Vector2f circlePosition = circle.GetPoints()[0];
             Vector2f AABBPosition = box.GetPoints()[0] + new Vector2f(half_w, half_h);
-
             float dx = circlePosition.X - AABBPosition.X; 
             float dy = circlePosition.Y - AABBPosition.Y;
 
-            if(Math.Abs(dx) > half_w)
-            {
-                if(dx < 0)
-                {
-                    dx = half_w * -1;
-                }
-                else
-                {
-                    dx = half_w;
-                }
-            }
+            //Calculate position of contact point
+            if (Math.Abs(dx) > half_w) { dx = dx < 0 ? half_w * -1 : half_w; }
+            if (Math.Abs(dy) > half_h) { dy = dy < 0 ? half_h * -1 : half_h; }
+            pNear = AABBPosition + new Vector2f(dx, dy);
 
-            if(Math.Abs(dy) > half_h)
-            {
-                if(dy < 0)
-                {
-                    dy = half_h * -1;
-                }
-                else
-                {
-                    dy = half_h;
-                }
-            }
-
-            contactPoint = AABBPosition + new Vector2f(dx, dy);
-
-            if(GameMath.GetVectorLength(circlePosition - contactPoint) > circle.Radius)
+            //Check if circle is intersecting with the contact point
+            if(GameMath.GetVectorLength(circlePosition - pNear) > circle.Radius)
             {
                 return false;
+            }
+
+            //Find surface normal of the AABB at collision point
+            if (pNear.X == AABBPosition.X - half_w)
+            {
+                normal = new Vector2f(-1, 0);
+            }
+            else if(pNear.X == AABBPosition.X + half_w)
+            {
+                normal = new Vector2f(1, 0);
+            }
+            else if (pNear.Y == AABBPosition.X - half_h)
+            {
+                normal = new Vector2f(0, -1);
+            }
+            else if (pNear.Y == AABBPosition.X + half_h)
+            {
+                normal = new Vector2f(0, 1);
             }
 
             return true;
@@ -203,77 +180,62 @@ namespace SFML_Engine.Systems
         /// </summary>
         /// <param name="obj1"> Physic object to check </param>
         /// <param name="obj2"> Physic object to check </param>
-        /// <param name="type"> Type of collision </param>
+        /// <param name="collision"> Type of collision </param>
         /// <returns> True if collision </returns>
-        public static bool PHYSOBJ_PHYSOBJ(PhysicObject obj1, PhysicObject obj2, out Collision.CollisionType type)
+        public static bool GAMEOBJ_GAMEOBJ(GameObject obj1, GameObject obj2, out Collision collision)
         {
-            if(obj1.GetType() == typeof(AABB))
+            //Init
+            bool collided = false;
+            PhysicObject physobj1 = obj1.PhysicObject;
+            PhysicObject physobj2 = obj2.PhysicObject;
+            collision = new Collision(obj1, obj2, Collision.CollisionType.NULL);
+
+            if(physobj1.GetType() == typeof(AABB))
             {
-                if(obj2.GetType() == typeof(AABB))
+                if(physobj2.GetType() == typeof(AABB))
                 {
-                    type = Collision.CollisionType.AABB_AABB;
-                    return AABB_AABB(obj1 as AABB, obj2 as AABB);
+                    collided = AABB_AABB(physobj1 as AABB, physobj2 as AABB);
+                    collision = new Collision(obj1, obj2, Collision.CollisionType.AABB_AABB);
                 }
 
-                else if (obj2.GetType() == typeof(Ray))
+                else if (physobj2.GetType() == typeof(Ray))
                 {
-                    type = Collision.CollisionType.AABB_RAY;
-                    return AABB_RAY(obj1 as AABB, obj2 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
+                    collided = AABB_RAY(physobj1 as AABB, physobj2 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, pFar, normal, Collision.CollisionType.AABB_RAY);
                 }
 
-                else if (obj2.GetType() == typeof(Circle))
+                else if (physobj2.GetType() == typeof(Circle))
                 {
-                    type = Collision.CollisionType.AABB_CIRCLE;
-                    return CIRCLE_AABB(obj2 as Circle, obj1 as AABB);
+                    collided = CIRCLE_AABB(physobj2 as Circle, physobj1 as AABB, out Vector2f pNear, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, normal, Collision.CollisionType.AABB_CIRCLE);
                 }
             }
 
-            else if(obj1.GetType() == typeof(Ray))
+            else if(physobj1.GetType() == typeof(Ray))
             {
-                if(obj2.GetType() == typeof(AABB))
+                if(physobj2.GetType() == typeof(AABB))
                 {
-                    type = Collision.CollisionType.AABB_RAY;
-                    return AABB_RAY(obj2 as AABB, obj1 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
+                    collided = AABB_RAY(physobj2 as AABB, physobj1 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, pFar, normal, Collision.CollisionType.AABB_RAY);
                 }
             }
 
-            else if(obj1.GetType() == typeof(Circle))
+            else if(physobj1.GetType() == typeof(Circle))
             {
-                if(obj2.GetType() == typeof(Circle))
+                if(physobj2.GetType() == typeof(Circle))
                 {
-                    type = Collision.CollisionType.CIRCLE_CIRCLE;
-                    return CIRCLE_CIRCLE(obj1 as Circle, obj2 as Circle);
+                    collided = CIRCLE_CIRCLE(physobj1 as Circle, physobj2 as Circle);
+                    collision = new Collision(obj1, obj2, Collision.CollisionType.CIRCLE_CIRCLE);
                 }
 
-                else if(obj2.GetType() == typeof(AABB))
+                else if(physobj2.GetType() == typeof(AABB))
                 {
-                    type = Collision.CollisionType.AABB_CIRCLE;
-                    return CIRCLE_AABB(obj1 as Circle, obj2 as AABB);
+                    collided = CIRCLE_AABB(physobj1 as Circle, physobj2 as AABB, out Vector2f pNear, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, normal, Collision.CollisionType.AABB_CIRCLE);
                 }
             }
 
-            type = Collision.CollisionType.AABB_AABB;
-            return false;
-        }
-
-        /// <summary>
-        /// Detect all collision in a game state
-        /// </summary>
-        /// <param name="state"></param>
-        public static void DetectAllCollision(GameState state)
-        {
-            foreach(GameObject obj1 in state.Objects)
-            {
-                foreach (GameObject obj2 in state.Objects)
-                {
-                    if(obj1 == obj2) { continue; }
-
-                    if(PHYSOBJ_PHYSOBJ(obj1.PhysicObject, obj2.PhysicObject, out Collision.CollisionType type))
-                    {
-                        state.AddCollision(new Collision(obj1, obj2, type));
-                    }
-                }
-            }
+            return collided;
         }
     }
 }

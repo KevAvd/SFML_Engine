@@ -114,8 +114,8 @@ namespace SFML_Engine
                     //Update state
                     _state.OnUpdate();
 
-                    //Handle Collision
-
+                    //Clear collisions
+                    _state.ClearCollisions();
 
                     //Update per second
                     ups++;
