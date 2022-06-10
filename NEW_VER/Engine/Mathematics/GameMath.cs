@@ -118,5 +118,15 @@ namespace SFML_Engine.Mathematics
             float d = MathF.Sqrt(vec.X * vec.X + vec.Y * vec.Y);
             return new Vector2f(vec.X / d, vec.Y / d);
         }
+
+        public static float Dot(Vector2f vec1, Vector2f vec2)
+        {
+            return vec1.X * vec2.X + vec1.Y * vec2.Y;
+        }
+
+        public static Vector2f ProjectVector(Vector2f toProject, Vector2f vec)
+        {
+            return Dot(toProject, vec) / (vec.X * vec.X + vec.Y * vec.Y) * vec;
+        }
     }
 }

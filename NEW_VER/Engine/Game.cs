@@ -8,6 +8,7 @@ using SFML_Engine.GameObjects.PhysicObjects;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace SFML_Engine
@@ -75,6 +76,12 @@ namespace SFML_Engine
                 }
 
                 _state = _states[0];
+            }
+
+            //Init main font
+            if (File.Exists(@"C:\Windows\Fonts\Arial.ttf"))
+            {
+                Renderer.MainFont = new Font(@"C:\Windows\Fonts\Arial.ttf");
             }
 
             //Start clock

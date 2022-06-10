@@ -198,6 +198,11 @@ namespace SFML_Engine.Systems
         /// <param name="pos"> Text position </param>
         public static void RenderText(string txt, uint charSize, Vector2f pos)
         {
+            if(_mainFont == null)
+            {
+                return;
+            }
+
             _texts.Add(new Text(txt, MainFont, charSize));
             _texts.Last().Position = pos;
         }

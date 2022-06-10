@@ -51,6 +51,7 @@ namespace SFML_Engine.Systems
             AABB_RAY,
             AABB_CIRCLE,
             CIRCLE_CIRCLE,
+            CIRCLE_RAY,
             NULL
         }
 

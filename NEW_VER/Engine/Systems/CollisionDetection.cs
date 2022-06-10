@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
+using SFML.Graphics;
 using SFML_Engine.GameObjects.PhysicObjects;
 using SFML_Engine.GameObjects;
 using SFML_Engine.Mathematics;
@@ -163,13 +164,50 @@ namespace SFML_Engine.Systems
             {
                 normal = new Vector2f(1, 0);
             }
-            else if (pNear.Y == AABBPosition.X - half_h)
+            else if(pNear.Y == AABBPosition.Y - half_h)
             {
                 normal = new Vector2f(0, -1);
             }
-            else if (pNear.Y == AABBPosition.X + half_h)
+            else if(pNear.Y == AABBPosition.Y + half_h)
             {
                 normal = new Vector2f(0, 1);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Detect collision between a circle and a ray
+        /// </summary>
+        /// <param name="circle"> Circle to check </param>
+        /// <param name="ray"> Ray to check </param>
+        /// <param name="pNear"> Near collision point </param>
+        /// <returns> True if collision </returns>
+        public static bool CIRCLE_RAY(Circle circle, Ray ray, out Vector2f pNear, out Vector2f normal)
+        {
+            Vector2f circlePosition = circle.GetPoints()[0];
+            Vector2f d = circle.GetPoints()[0] - ray.GetPoints()[0];
+            Vector2f start = ray.GetPoints()[0];
+            Vector2f end = ray.GetPoints()[1];
+            Vector2f line = end - start;
+            pNear = GameMath.ProjectVector(d, line) + start;
+            normal = GameMath.NormalizeVector(circlePosition - pNear);
+
+            if(GameMath.GetVectorLength(start - circlePosition) < circle.Radius ||
+               GameMath.GetVectorLength(end - circlePosition) < circle.Radius)
+            {
+                return true;
+            }
+
+            if(GameMath.GetVectorLength(circlePosition - pNear) > circle.Radius)
+            {
+                return false;
+            }
+
+            if(GameMath.GetVectorLength(pNear - start) > GameMath.GetVectorLength(line) ||
+               GameMath.GetVectorLength(pNear - end) > GameMath.GetVectorLength(line))
+            {
+                return false;
             }
 
             return true;
@@ -218,6 +256,12 @@ namespace SFML_Engine.Systems
                     collided = AABB_RAY(physobj2 as AABB, physobj1 as Ray, out Vector2f pNear, out Vector2f pFar, out Vector2f normal);
                     collision = new Collision(obj1, obj2, pNear, pFar, normal, Collision.CollisionType.AABB_RAY);
                 }
+
+                if(physobj2.GetType() == typeof(Circle))
+                {
+                    collided = CIRCLE_RAY(physobj2 as Circle, physobj1 as Ray, out Vector2f pNear, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, normal, Collision.CollisionType.CIRCLE_RAY);
+                }
             }
 
             else if(physobj1.GetType() == typeof(Circle))
@@ -232,6 +276,12 @@ namespace SFML_Engine.Systems
                 {
                     collided = CIRCLE_AABB(physobj1 as Circle, physobj2 as AABB, out Vector2f pNear, out Vector2f normal);
                     collision = new Collision(obj1, obj2, pNear, normal, Collision.CollisionType.AABB_CIRCLE);
+                }
+
+                else if (physobj2.GetType() == typeof(Ray))
+                {
+                    collided = CIRCLE_RAY(physobj1 as Circle, physobj2 as Ray, out Vector2f pNear, out Vector2f normal);
+                    collision = new Collision(obj1, obj2, pNear, normal, Collision.CollisionType.CIRCLE_RAY);
                 }
             }
 
