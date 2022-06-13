@@ -15,7 +15,6 @@ namespace SFML_Engine
         protected GraphicHandler _graphicHandler = new GraphicHandler();  //Handles graphics for the object
         protected Transformable _transformable = new Transformable();     //Transformable
         protected GameObject _relative;                                   //Relative game object
-        protected PhysicState _physicState = PhysicState.NOCLIP;          //Physic state of the object
         GameState _state;                                                 //Game state container
         bool _destroyed = false;                                          //Indicates if an object is destroyed
         bool _IsRelative = false;                                         //Indicates if an object transfromable is relative to another one
@@ -35,11 +34,6 @@ namespace SFML_Engine
         /// Get/Set transformable
         /// </summary>
         public Transformable Transformable { get => _transformable; set => _transformable = value; }
-
-        /// <summary>
-        /// Get/Set physic state
-        /// </summary>
-        public PhysicState PhysicState { get => _physicState; set => _physicState = value; }
 
         /// <summary>
         /// Get/Set relative object

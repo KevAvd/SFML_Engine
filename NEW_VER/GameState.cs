@@ -88,11 +88,11 @@ namespace SFML_Engine
         {
             foreach (GameObject obj1 in _gameObjects)
             {
-                if(obj1.PhysicState == PhysicState.NOCLIP) { continue; }
+                if(obj1.PhysicObject.State == PhysicState.NOCLIP) { continue; }
 
                 foreach (GameObject obj2 in _gameObjects)
                 {
-                    if (obj1 == obj2 || obj2.PhysicState == PhysicState.NOCLIP) { continue; }
+                    if (obj1 == obj2 || obj2.PhysicObject.State == PhysicState.NOCLIP) { continue; }
 
                     if (CollisionDetection.GAMEOBJ_GAMEOBJ(obj1, obj2, out Collision collision))
                     {

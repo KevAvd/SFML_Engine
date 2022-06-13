@@ -19,7 +19,7 @@ namespace SFML_Engine
         /// <summary>
         /// Get/Set physic object state
         /// </summary>
-        internal PhysicState State { get => _phyState; set => _phyState = value; }
+        public PhysicState State { get => _phyState; set => _phyState = value; }
 
         /// <summary>
         /// Get all points that represent the physic object
