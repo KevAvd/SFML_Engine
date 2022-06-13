@@ -7,7 +7,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
-namespace SFML_Engine.Systems
+namespace SFML_Engine
 {
     static class Inputs
     {

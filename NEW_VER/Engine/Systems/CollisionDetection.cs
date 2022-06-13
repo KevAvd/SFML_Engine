@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SFML.System;
-using SFML.Graphics;
-using SFML_Engine.GameObjects.PhysicObjects;
-using SFML_Engine.GameObjects;
-using SFML_Engine.Mathematics;
+﻿using SFML.System;
+using System;
 
-namespace SFML_Engine.Systems
+namespace SFML_Engine
 {
     static class CollisionDetection
     {

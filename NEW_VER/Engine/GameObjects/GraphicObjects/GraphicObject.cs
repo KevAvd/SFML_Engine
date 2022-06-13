@@ -1,7 +1,6 @@
 ﻿using SFML.Graphics;
-using SFML_Engine.Enums;
 
-namespace SFML_Engine.GameObjects.GraphicObjects
+namespace SFML_Engine
 {
     abstract class GraphicObject
     {

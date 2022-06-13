@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFML_Engine.GameObjects
+namespace SFML_Engine
 {
     abstract class ScriptObject : GameObject
     {

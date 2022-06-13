@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SFML.System;
-using SFML_Engine.GameObjects;
+﻿using SFML.System;
 
-namespace SFML_Engine.Systems
+namespace SFML_Engine
 {
     class Collision
     {

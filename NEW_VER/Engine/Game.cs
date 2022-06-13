@@ -1,10 +1,5 @@
 ﻿using SFML.Graphics;
 using SFML.Window;
-using SFML_Engine.Systems;
-using SFML_Engine.Enums;
-using SFML_Engine.GameObjects;
-using SFML_Engine.GameObjects.GraphicObjects;
-using SFML_Engine.GameObjects.PhysicObjects;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
@@ -105,10 +100,13 @@ namespace SFML_Engine
                     //Update objects
                     foreach(GameObject obj in _state.Objects)
                     {
+                        //Update GraphicHandler
+                        obj.GraphicHandler.Update();
+
                         //Update animation
-                        if(obj.GraphicObject != null && obj.GraphicObject.GetType() == typeof(Animation))
+                        if(obj.GraphicHandler.CurrentGrphObj != null && obj.GraphicHandler.CurrentGrphObj.GetType() == typeof(Animation))
                         {
-                            (obj.GraphicObject as Animation).Update();
+                            (obj.GraphicHandler.CurrentGrphObj as Animation).Update();
                         }
 
                         //Update script

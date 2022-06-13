@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
 
-namespace SFML_Engine.GameObjects.PhysicObjects
+namespace SFML_Engine
 {
     class Circle : PhysicObject
     {

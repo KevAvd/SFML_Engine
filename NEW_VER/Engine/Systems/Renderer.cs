@@ -5,12 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
 using SFML.Graphics;
-using SFML_Engine.Mathematics;
-using SFML_Engine.GameObjects;
-using SFML_Engine.GameObjects.PhysicObjects;
-using SFML_Engine.Enums;
 
-namespace SFML_Engine.Systems
+namespace SFML_Engine
 {
     static class Renderer
     {
@@ -69,8 +65,8 @@ namespace SFML_Engine.Systems
             foreach (GameObject obj in gameObjects)
             {
                 if (RENDER_PHYSOBJ && obj.PhysicObject != null) { RenderPhysicObject(obj.PhysicObject); }
-                if(obj.GraphicObject == null || obj.GraphicState == GraphicState.HIDDEN) { continue; }
-                ObjectSpaceToWorldSpace(obj);
+                if(obj.GraphicHandler.CurrentGrphObj == null || obj.GraphicHandler.GraphicState == GraphicState.HIDDEN) { continue; }
+                RenderObject(obj);
             }
 
             //Clear last image
@@ -132,11 +128,10 @@ namespace SFML_Engine.Systems
         /// <summary>
         /// Transform vertices position from object space to world space
         /// </summary>
-        /// <param name="vertices"> Vertices to transform </param>
-        /// <param name="transformable"></param>
-        static void ObjectSpaceToWorldSpace(GameObject obj)
+        /// <param name="obj"> GameObject to render </param>
+        static void RenderObject(GameObject obj)
         {
-            Vertex[] vertices = obj.GraphicObject.GetVertices();
+            Vertex[] vertices = obj.GraphicHandler.CurrentGrphObj.GetVertices();
             Vector2f position;
 
             for (int i = 0; i < vertices.Length; i++)
@@ -153,7 +148,7 @@ namespace SFML_Engine.Systems
                     position = GameMath.VectorRotation(GameMath.ScaleVector(vertices[i].Position, obj.Scale), obj.Rotation) + obj.Position;
                 }
 
-                switch (obj.GraphicState)
+                switch (obj.GraphicHandler.GraphicState)
                 {
                     case GraphicState.BACKGROUND:
                         _Vertices_Quads_Background.Add(new Vertex(position, vertices[i].Color, vertices[i].TexCoords));

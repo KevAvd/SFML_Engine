@@ -1,8 +1,7 @@
 ﻿using SFML.System;
 using SFML.Graphics;
-using SFML_Engine.Enums;
 
-namespace SFML_Engine.GameObjects.PhysicObjects
+namespace SFML_Engine
 {
     abstract class PhysicObject
     {

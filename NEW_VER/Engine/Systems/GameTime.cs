@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
 
-namespace SFML_Engine.Systems
+namespace SFML_Engine
 {
     static class GameTime
     {

@@ -1,7 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 
-namespace SFML_Engine.GameObjects.PhysicObjects
+namespace SFML_Engine
 {
     internal class AABB : PhysicObject
     {

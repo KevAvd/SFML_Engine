@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SFML_Engine.GameObjects;
-using SFML_Engine.Systems;
 
 namespace SFML_Engine
 {
@@ -67,7 +64,8 @@ namespace SFML_Engine
         public void AddGameObj(GameObject obj)
         {
             obj.SetGameState(this);
-            if(obj.GetType() == typeof(ScriptObject) || obj.GetType().IsSubclassOf(typeof(ScriptObject)))
+            obj.GraphicHandler.SetDefaultSpriteToCurrent();
+            if(obj.GetType().IsSubclassOf(typeof(ScriptObject)))
             {
                 (obj as ScriptObject).OnStart();
             }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFML_Engine.GameObjects.GraphicObjects
+namespace SFML_Engine
 {
     internal class GameSprite : GraphicObject
     {

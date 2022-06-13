@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
 
-namespace SFML_Engine.Mathematics
+namespace SFML_Engine
 {
     static class GameMath
     {

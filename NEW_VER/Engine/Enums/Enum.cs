@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SFML_Engine.Enums
+namespace SFML_Engine
 {
     enum AnimationType
     {

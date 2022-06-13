@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
 using SFML.Graphics;
-using SFML_Engine.Systems;
-using SFML_Engine.Enums;
 
-namespace SFML_Engine.GameObjects.GraphicObjects
+namespace SFML_Engine
 {
     internal class Animation : GraphicObject
     {
@@ -107,7 +105,7 @@ namespace SFML_Engine.GameObjects.GraphicObjects
         /// <summary>
         /// Go to next frame
         /// </summary>
-        public void NextFrame()
+        void NextFrame()
         {
             _index++;
 
@@ -121,7 +119,7 @@ namespace SFML_Engine.GameObjects.GraphicObjects
         /// <summary>
         /// Go to previous frame
         /// </summary>
-        public void PreviousFrame()
+        void PreviousFrame()
         {
             _index--;
 
@@ -135,8 +133,10 @@ namespace SFML_Engine.GameObjects.GraphicObjects
         /// <summary>
         /// Loop trough each frame
         /// </summary>
-        public void LoopFrame()
+        void LoopFrame()
         {
+            _index += _increment;
+
             if( _index + 1 == FrameCount())
             {
                 _increment = -1;
@@ -146,8 +146,6 @@ namespace SFML_Engine.GameObjects.GraphicObjects
                 _increment = 1;
                 _animCount++;
             }
-
-            _index += _increment;
         }
 
         /// <summary>
