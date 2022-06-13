@@ -114,6 +114,12 @@ namespace SFML_Engine
                         {
                             (obj as ScriptObject).OnUpdate();
                         }
+
+                        //Update relative position if is relative
+                        if (obj.IsRelative())
+                        {
+                            obj.UpdateRelativePosition(obj.Position);
+                        }
                     }
 
                     //Update state

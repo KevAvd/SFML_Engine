@@ -31,7 +31,7 @@ namespace SFML_Engine
         /// <summary>
         /// Get/Set game
         /// </summary>
-        internal Game Game { get => _game; set => _game = value; }
+        public Game Game { get => _game; set => _game = value; }
 
         /// <summary>
         /// Executed on game start
@@ -63,7 +63,7 @@ namespace SFML_Engine
         /// <param name="obj"></param>
         public void AddGameObj(GameObject obj)
         {
-            obj.SetGameState(this);
+            obj.GameState = this;
             obj.GraphicHandler.SetDefaultSpriteToCurrent();
             if(obj.GetType().IsSubclassOf(typeof(ScriptObject)))
             {
@@ -84,13 +84,15 @@ namespace SFML_Engine
         /// Detect all collision in a game state
         /// </summary>
         /// <param name="state"></param>
-        public void DetectAllCollision()
+        public void CheckCollision()
         {
             foreach (GameObject obj1 in _gameObjects)
             {
+                if(obj1.PhysicState == PhysicState.NOCLIP) { continue; }
+
                 foreach (GameObject obj2 in _gameObjects)
                 {
-                    if (obj1 == obj2) { continue; }
+                    if (obj1 == obj2 || obj2.PhysicState == PhysicState.NOCLIP) { continue; }
 
                     if (CollisionDetection.GAMEOBJ_GAMEOBJ(obj1, obj2, out Collision collision))
                     {

@@ -26,7 +26,6 @@ namespace SFML_Engine
     enum PhysicState
     {
         NORMAL,
-        UNMOVABLE,
         NOCLIP
     }
 }

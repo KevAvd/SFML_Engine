@@ -19,6 +19,7 @@ namespace SFML_Engine
         GameState _state;                                                 //Game state container
         bool _destroyed = false;                                          //Indicates if an object is destroyed
         bool _IsRelative = false;                                         //Indicates if an object transfromable is relative to another one
+        Vector2f _relativePosition;                                       //Position relative to another game object
 
         /// <summary>
         /// Get/Set physic object
@@ -46,6 +47,11 @@ namespace SFML_Engine
         public GameObject Relative { get => _relative; set { _relative = value; _IsRelative = true; } }
 
         /// <summary>
+        /// Get relative position
+        /// </summary>
+        public Vector2f RelativePosition { get => _relativePosition; }
+
+        /// <summary>
         /// Get/Set position
         /// </summary>
         public Vector2f Position
@@ -54,6 +60,13 @@ namespace SFML_Engine
             set 
             {
                 _transformable.Position = value;
+
+                if (_IsRelative)
+                {
+                    UpdateRelativePosition(value);
+                    return;
+                }
+
                 _physicObject.UpdatePosition(_transformable.Position);
             }
         }
@@ -84,6 +97,11 @@ namespace SFML_Engine
             get { return _transformable.Origin; }
             set { _transformable.Origin = value; }
         }
+
+        /// <summary>
+        /// Get/Set Game state
+        /// </summary>
+        public GameState GameState { get => _state; set => _state = value; }
 
         /// <summary>
         /// Destroys this object
@@ -120,20 +138,13 @@ namespace SFML_Engine
         }
 
         /// <summary>
-        /// Get the gamestate that contains this object
+        /// Update the relative position of the object
         /// </summary>
-        /// <returns> GameState </returns>
-        public GameState GetGameState()
+        /// <param name="pos"> Position </param>
+        public void UpdateRelativePosition(Vector2f pos)
         {
-            return _state;
-        }
-
-        /// <summary>
-        /// Set this object's game state
-        /// </summary>
-        public void SetGameState(GameState state)
-        {
-            _state = state;
+            _relativePosition = GameMath.VectorRotation(pos, _relative.Rotation) + _relative.Position;
+            _physicObject.UpdatePosition(_relativePosition);
         }
     }
 }

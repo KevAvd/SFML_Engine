@@ -138,10 +138,7 @@ namespace SFML_Engine
             {
                 if (obj.IsRelative())
                 {
-                    position = GameMath.VectorRotation(GameMath.ScaleVector(vertices[i].Position, obj.Scale), obj.Rotation);
-                    position += obj.Position;
-                    position = GameMath.VectorRotation(position, obj.Relative.Rotation);
-                    position += obj.Relative.Position;
+                    position = GameMath.VectorRotation(GameMath.ScaleVector(vertices[i].Position, obj.Scale), obj.Rotation) + obj.RelativePosition;
                 }
                 else
                 {

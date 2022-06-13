@@ -9,7 +9,7 @@ namespace SFML_Engine
         protected Vertex[] _vertices;                   //Physic object's vertices
 
         //State
-        PhysicState _phyState;                          //Physic object's state
+        PhysicState _phyState = PhysicState.NORMAL;     //Physic object's state
 
         /// <summary>
         /// Get vertices
