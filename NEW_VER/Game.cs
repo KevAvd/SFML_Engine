@@ -20,9 +20,9 @@ namespace SFML_Engine
         /// <summary>
         /// Constructor
         /// </summary>
-        public Game()
+        public Game(string title)
         {
-            _window = new RenderWindow(VideoMode.DesktopMode, "SFML.NET game !!!", Styles.Fullscreen);
+            _window = new RenderWindow(VideoMode.DesktopMode, title, Styles.Fullscreen);
         }
 
         /// <summary>

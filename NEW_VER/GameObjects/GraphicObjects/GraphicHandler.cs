@@ -92,7 +92,7 @@ namespace SFML_Engine
         {
             if(_currentGrphObj != null && _currentGrphObj.GetType() == typeof(Animation) && (_currentGrphObj as Animation).Count == _animationCount)
             {
-                _currentGrphObj = _defaultSprite;
+                SetDefaultSpriteToCurrent();
             }
         }
 
